@@ -4,6 +4,7 @@ const app = express()
 const db = require('../models');
 const multer = require('multer');
 const { Validation } = require('../validation')
+const { Op } = require("sequelize");
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -25,6 +26,9 @@ var upload = multer({
         }
     }
 })
+
+
+
 
 app.get('/showdb', (req, res) => {
 
@@ -96,18 +100,49 @@ app.post('/addUser', upload.single("image"), async (req, res) => {
     else {
 
 
-        db.userData.create(req.body)
-            .then((submitData) => {
+        db.userData.findAll({
+            where: {
+                [Op.or]: [
+                    { email: req.body.email },
+                    { mobileNo: req.body.mobileNo }
+                ]
 
 
-                return res.status(200).json(submitData);
+            }
+        })
+            .then((response) => {
+
+                if (response.length < 1) {
+
+                    db.userData.create(req.body)
+                        .then((submitData) => {
+
+                            return res.status(200).json(submitData);
+                        })
+                        .catch(err => {
+                            console.log("myerr", err)
+                            return res.status(400).json({
+                                "message": err
+                            })
+                        })
+
+                }
+
+                else {
+
+                    return res.status(200).json(response)
+                }
+
             })
-            .catch(err => {
-                console.log("myerr",err)
+            .catch((err) => {
+                console.log(err)
                 return res.status(400).json({
+
                     "message": err
                 })
             })
+
+
 
     }
 
@@ -159,7 +194,7 @@ app.put('/allowance', (req, res) => {
 
 
 
-app.put('/edit', upload.single("image"),async(req, res) => {
+app.put('/edit', upload.single("image"), async (req, res) => {
 
     const { error } = Validation.editValidation(req.body)
 

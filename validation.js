@@ -1,5 +1,8 @@
 const Joi = require("joi");
 
+
+
+
 const registerValidation = (data) => {
     const schema = Joi.object({
         image:Joi.object(),
@@ -25,7 +28,7 @@ const loginValidation = (data) => {
 
     }).unknown();
 
-    return schema.validate(data);
+    return schema.validate(data,{ abortEarly: false });
 }
 
 
@@ -45,6 +48,7 @@ const flagValidation = (data) => {
 const editValidation = (data) => {
 
     const schema = Joi.object({
+
         image:Joi.object(),
         mobileNum: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
         name: Joi.string().alphanum().min(3).max(25).trim(true).required(),
