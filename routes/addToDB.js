@@ -2,8 +2,29 @@
 const express = require('express')
 const app = express()
 const db = require('../models');
+const multer = require('multer');
 const { Validation } = require('../validation')
 
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './uploads')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
+    }
+})
+
+var upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+        }
+    }
+})
 
 app.get('/showdb', (req, res) => {
 
@@ -59,7 +80,7 @@ app.post('/login', (req, res) => {
     }
 })
 
-app.post('/addUser', async (req, res) => {
+app.post('/addUser', upload.single("image"), async (req, res) => {
 
 
     const { error } = Validation.registerValidation(req.body)
@@ -82,9 +103,9 @@ app.post('/addUser', async (req, res) => {
                 return res.status(200).json(submitData);
             })
             .catch(err => {
-                console.log(err)
+                console.log("myerr",err)
                 return res.status(400).json({
-                    "message":err
+                    "message": err
                 })
             })
 
@@ -94,7 +115,7 @@ app.post('/addUser', async (req, res) => {
 
 
 
-app.put('/allow', (req, res) => {
+app.put('/allowance', (req, res) => {
 
     const { error } = Validation.flagValidation({
 
@@ -138,7 +159,7 @@ app.put('/allow', (req, res) => {
 
 
 
-app.put('/edit', (req, res) => {
+app.put('/edit', upload.single("image"),async(req, res) => {
 
     const { error } = Validation.editValidation(req.body)
 

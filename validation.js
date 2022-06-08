@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 const registerValidation = (data) => {
     const schema = Joi.object({
-
+        image:Joi.object(),
         name: Joi.string().alphanum().min(3).max(25).trim(true).required(),
         age: Joi.number().min(1).max(150).required(),
         mobileNo: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
@@ -12,7 +12,7 @@ const registerValidation = (data) => {
         isAdmin: Joi.string().required()
     }).unknown();
 
-    return schema.validate(data);
+    return schema.validate(data,{ abortEarly: false });
 
 
 }
@@ -45,6 +45,7 @@ const flagValidation = (data) => {
 const editValidation = (data) => {
 
     const schema = Joi.object({
+        image:Joi.object(),
         mobileNum: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
         name: Joi.string().alphanum().min(3).max(25).trim(true).required(),
         age: Joi.number().min(1).max(150).required(),
