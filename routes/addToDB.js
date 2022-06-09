@@ -6,6 +6,8 @@ const multer = require('multer');
 const { Validation } = require('../validation')
 const { Op } = require("sequelize");
 
+
+
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './uploads')
@@ -46,6 +48,7 @@ app.get('/showdb', (req, res) => {
 
         })
 })
+
 
 
 app.post('/login', (req, res) => {

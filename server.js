@@ -1,4 +1,4 @@
-const {port} = require('./config')
+const { port } = require('./config')
 const express = require('express')
 const app = express();
 const db = require('./models');
@@ -13,7 +13,10 @@ app.use(express.json())
 
 const dbServer = require('./routes/addToDB')
 
-app.use('/api',dbServer)
+
+app.use('/images', express.static('uploads'));
+
+app.use('/api', dbServer)
 
 db.sequelize.sync({}).then(() => {
     app.listen(port, () => {
