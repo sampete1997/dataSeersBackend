@@ -23,8 +23,8 @@ var upload = multer({
         if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
             cb(null, true);
         } else {
-            cb(null, false);
-            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+            cb(new Error('Only .png, .jpg and .jpeg format allowed!'), false);
+            
         }
     }
 })
@@ -87,8 +87,17 @@ app.post('/login', (req, res) => {
     }
 })
 
-app.post('/addUser', upload.single("image"), async (req, res) => {
+const uploadSingleImage = upload.single("image")
 
+app.post('/addUser',  async (req, res) => {
+
+
+    uploadSingleImage(req, res, function (err){
+
+        if(err){
+            
+            return res.status(400).json({ "Message": err.message})
+        }
 
     const { error } = Validation.registerValidation(req.body)
 
@@ -116,6 +125,7 @@ app.post('/addUser', upload.single("image"), async (req, res) => {
             .then((response) => {
 
                 if (response.length < 1) {
+
 
                     db.userData.create(req.body)
                         .then((submitData) => {
@@ -149,6 +159,7 @@ app.post('/addUser', upload.single("image"), async (req, res) => {
 
     }
 
+})
 })
 
 
