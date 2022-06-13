@@ -262,24 +262,23 @@ app.put('/edit', async (req, res) => {
                 }
             }).then((response) => {
 
-               
+
 
                 if (response.length > 0) {
 
-                    for(indx=0;indx<response.length;indx++){
+                    for (indx = 0; indx < response.length; indx++) {
 
                         if (response[indx].dataValues.id != req.body.id) {
                             alreadyExist = true
-                            
-                           return res.status(200).json(response)
-                        
+
+                            return res.status(200).json(response)
+
                         }
 
-                        if(alreadyExist){
+                        if (alreadyExist) {
                             break
                         }
                     }
-                  
 
                 }
 
@@ -289,7 +288,7 @@ app.put('/edit', async (req, res) => {
                     response.map((userdata) => {
 
                         if (userdata.dataValues.id == req.body.id) {
-                            
+
                             return updateData(req, res)
                         }
 
