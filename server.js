@@ -18,7 +18,7 @@ app.use('/images', express.static('uploads'));
 
 app.use('/api', dbServer)
 
-db.sequelize.sync({}).then(() => {
+db.sequelize.sync().then(() => {
     app.listen(port, () => {
         console.log('listning to port :', port);
     })

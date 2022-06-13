@@ -12,7 +12,8 @@ const registerValidation = (data) => {
         email: Joi.array().items(Joi.string().email().max(256).required()).single().required(),
         photo: Joi.string().required(),
         flag: Joi.string().required(),
-        isAdmin: Joi.string().required()
+        isAdmin: Joi.string().required(),
+        id:Joi.string().required()
     }).unknown();
 
     return schema.validate(data,{ abortEarly: false });
@@ -48,9 +49,8 @@ const flagValidation = (data) => {
 const editValidation = (data) => {
 
     const schema = Joi.object({
-
         
-        mobileNum: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
+        id:Joi.string().required(),
         name: Joi.string().alphanum().min(3).max(25).trim(true).required(),
         age: Joi.number().min(1).max(150).required(),
         mobileNo: Joi.string().length(10).pattern(/^[0-9]+$/).required(),

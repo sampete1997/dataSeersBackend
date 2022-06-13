@@ -24,7 +24,7 @@ var upload = multer({
             cb(null, true);
         } else {
             cb(new Error('Only .png, .jpg and .jpeg format allowed!'), false);
-            
+
         }
     }
 })
@@ -89,77 +89,77 @@ app.post('/login', (req, res) => {
 
 const uploadSingleImage = upload.single("image")
 
-app.post('/addUser',  async (req, res) => {
+app.post('/addUser', async (req, res) => {
 
 
-    uploadSingleImage(req, res, function (err){
+    uploadSingleImage(req, res, function (err) {
 
-        if(err){
-            
-            return res.status(400).json({ "Message": err.message})
+        if (err) {
+
+            return res.status(400).json({ "Message": err.message })
         }
 
-    const { error } = Validation.registerValidation(req.body)
+        const { error } = Validation.registerValidation(req.body)
 
-    if (error) {
+        if (error) {
 
-        console.log('error', error);
-        return res.status(400).json({
-            "message": error
-        })
-    }
+            console.log('error', error);
+            return res.status(400).json({
+                "message": error
+            })
+        }
 
-    else {
-
-
-        db.userData.findAll({
-            where: {
-                [Op.or]: [
-                    { email: req.body.email },
-                    { mobileNo: req.body.mobileNo }
-                ]
+        else {
 
 
-            }
-        })
-            .then((response) => {
+            db.userData.findAll({
+                where: {
+                    [Op.or]: [
+                        { email: req.body.email },
+                        { mobileNo: req.body.mobileNo }
+                    ]
 
-                if (response.length < 1) {
+
+                }
+            })
+                .then((response) => {
+
+                    if (response.length < 1) {
 
 
-                    db.userData.create(req.body)
-                        .then((submitData) => {
+                        db.userData.create(req.body)
+                            .then((submitData) => {
 
-                            return res.status(200).json(submitData);
-                        })
-                        .catch(err => {
-                            console.log("myerr", err)
-                            return res.status(400).json({
-                                "message": err
+                                return res.status(200).json(submitData);
                             })
-                        })
+                            .catch(err => {
+                                console.log("myerr", err)
+                                return res.status(400).json({
+                                    "message": err
+                                })
+                            })
 
-                }
+                    }
 
-                else {
+                    else {
 
-                    return res.status(200).json(response)
-                }
+                        return res.status(200).json(response)
+                    }
 
-            })
-            .catch((err) => {
-                console.log(err)
-                return res.status(400).json({
-
-                    "message": err
                 })
-            })
+                .catch((err) => {
+                    console.log(err)
+                    return res.status(400).json({
+
+                        "message": err
+                    })
+                })
 
 
 
-    }
+        }
 
-})
+    })
 })
 
 
@@ -206,41 +206,119 @@ app.put('/allowance', (req, res) => {
     }
 })
 
+function updateData(req, res) {
 
+    db.userData.update(req.body,
+        {
+            where: {
 
-app.put('/edit', upload.single("image"), async (req, res) => {
+                id: req.body.id
+            }
 
-    const { error } = Validation.editValidation(req.body)
-
-    if (error) {
-
-        console.log('error', error);
-        return res.status(400).json({
-            "message": error
+        }).then((data) => {
+            console.log('bad data', data);
+            return res.status(200).json(data)
         })
-    }
+        .catch((err) => {
 
-    else {
+            console.log(err)
+            return res.status(400).json({
+                "message": err
+            })
+        })
+}
 
-        db.userData.update(req.body,
-            {
+app.put('/edit', async (req, res) => {
+
+
+    uploadSingleImage(req, res, function (err) {
+
+        if (err) {
+
+            return res.status(400).json({ "Message": err.message })
+        }
+
+
+        const { error } = Validation.editValidation(req.body)
+
+        if (error) {
+
+            console.log('error', error);
+            return res.status(400).json({
+                "message": error
+            })
+        }
+
+        else {
+
+            let alreadyExist = false
+            db.userData.findAll({
                 where: {
+                    [Op.or]: [
+                        { email: req.body.email },
+                        { mobileNo: req.body.mobileNo }
+                    ]
 
-                    mobileNo: req.body.mobileNum
+                }
+            }).then((response) => {
+
+               
+
+                if (response.length > 0) {
+
+                    
+
+                    for(indx=0;indx<response.length;indx++){
+
+                        if (response[indx].dataValues.id != req.body.id) {
+                            alreadyExist = true
+                            
+                            console.log('id"s: ',response[indx] .dataValues.id);
+                            console.log('Id: ', req.body.id);
+                            return res.status(200).json(response)
+                            break
+                        }
+                    }
+                    console.log('updatedata reacghed:');
+
                 }
 
-            }).then((data) => {
-                return res.status(200).json(data)
-            })
-            .catch((err) => {
 
-                console.log(err)
-                return res.status(400).json({
-                    "message": err
+                if (alreadyExist == false && response.length > 0) {
+
+                    console.log('response of came in same if:', response);
+
+                    response.map((userdata) => {
+
+
+
+                        if (userdata.dataValues.id == req.body.id) {
+                            console.log('same usedata@@@', userdata);
+                            console.log('id"s: ', userdata.dataValues.id);
+                            console.log('Id: ', req.body.id);
+                            return updateData(req, res)
+                        }
+
+                    })
+                }
+                else {
+
+                    return updateData(req, res)
+
+                }
+            })
+                .catch((err) => {
+                    console.log(err)
+                    return res.status(400).json({
+                        "message": err
+                    })
                 })
-            })
 
-    }
+
+
+        }
+
+    })
 })
 
 

@@ -34,7 +34,14 @@ module.exports = (sequelize, DataTypes) => {
         isAdmin:{
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        id:{
+            type:DataTypes.STRING,
+            allowNull:false,
+            primaryKey:true
         }
+
+
 
 
     })
