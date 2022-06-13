@@ -266,36 +266,30 @@ app.put('/edit', async (req, res) => {
 
                 if (response.length > 0) {
 
-                    
-
                     for(indx=0;indx<response.length;indx++){
 
                         if (response[indx].dataValues.id != req.body.id) {
                             alreadyExist = true
                             
-                            console.log('id"s: ',response[indx] .dataValues.id);
-                            console.log('Id: ', req.body.id);
-                            return res.status(200).json(response)
+                           return res.status(200).json(response)
+                        
+                        }
+
+                        if(alreadyExist){
                             break
                         }
                     }
-                    console.log('updatedata reacghed:');
+                  
 
                 }
 
 
                 if (alreadyExist == false && response.length > 0) {
 
-                    console.log('response of came in same if:', response);
-
                     response.map((userdata) => {
 
-
-
                         if (userdata.dataValues.id == req.body.id) {
-                            console.log('same usedata@@@', userdata);
-                            console.log('id"s: ', userdata.dataValues.id);
-                            console.log('Id: ', req.body.id);
+                            
                             return updateData(req, res)
                         }
 
